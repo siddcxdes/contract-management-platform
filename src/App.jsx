@@ -18,19 +18,19 @@ function App() {
         <div className="header">
           <div className="container">
             <div className="header-content">
-              <h1>contract management platform</h1>
+              <h1>Contract Management Platform</h1>
               <div className="nav-buttons">
                 <button
                   className={`btn ${currentView === 'dashboard' ? 'btn-primary' : 'btn-secondary'}`}
                   onClick={() => setCurrentView('dashboard')}
                 >
-                  dashboard
+                  Dashboard
                 </button>
                 <button
                   className={`btn ${currentView === 'blueprints' ? 'btn-primary' : 'btn-secondary'}`}
                   onClick={() => setCurrentView('blueprints')}
                 >
-                  blueprints
+                  Blueprints
                 </button>
               </div>
             </div>
@@ -44,13 +44,13 @@ function App() {
               className="btn btn-primary"
               onClick={() => setShowBlueprintCreator(true)}
             >
-              + create blueprint
+              + Create Blueprint
             </button>
             <button
               className="btn btn-success"
               onClick={() => setShowContractCreator(true)}
             >
-              + create contract
+              + Create Contract
             </button>
           </div>
         </div>

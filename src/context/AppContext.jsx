@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { getBlueprints, saveBlueprints, getContracts, saveContracts, generateId } from '../utils/storage';
+import { blueprintAPI, contractAPI } from '../services/api';
 import { CONTRACT_STATES, canTransition } from '../utils/constants';
 
 // create context for app state
@@ -18,93 +18,122 @@ export const useApp = () => {
 export const AppProvider = ({ children }) => {
     const [blueprints, setBlueprints] = useState([]);
     const [contracts, setContracts] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    // load data from storage when app starts
+    // load data from API when app starts
     useEffect(() => {
-        setBlueprints(getBlueprints());
-        setContracts(getContracts());
+        loadInitialData();
     }, []);
 
-    // save blueprints whenever they change
-    useEffect(() => {
-        saveBlueprints(blueprints);
-    }, [blueprints]);
-
-    // save contracts whenever they change
-    useEffect(() => {
-        saveContracts(contracts);
-    }, [contracts]);
+    const loadInitialData = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const [blueprintsRes, contractsRes] = await Promise.all([
+                blueprintAPI.getAll(),
+                contractAPI.getAll()
+            ]);
+            setBlueprints(blueprintsRes.data || []);
+            setContracts(contractsRes.data || []);
+        } catch (err) {
+            setError(err.message);
+            console.error('Failed to load data:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // add a new blueprint
-    const addBlueprint = (blueprint) => {
-        const newBlueprint = {
-            ...blueprint,
-            id: generateId(),
-            createdAt: new Date().toISOString()
-        };
-        setBlueprints([...blueprints, newBlueprint]);
-        return newBlueprint;
+    const addBlueprint = async (blueprint) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await blueprintAPI.create(blueprint);
+            const newBlueprint = response.data;
+            setBlueprints([...blueprints, newBlueprint]);
+            return newBlueprint;
+        } catch (err) {
+            setError(err.message);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
     };
 
     // add a new contract from a blueprint
-    const addContract = (blueprintId, contractName) => {
-        const blueprint = blueprints.find(b => b.id === blueprintId);
-        if (!blueprint) return null;
-
-        const newContract = {
-            id: generateId(),
-            name: contractName,
-            blueprintId: blueprint.id,
-            blueprintName: blueprint.name,
-            state: CONTRACT_STATES.CREATED,
-            fields: blueprint.fields.map(field => ({
-                ...field,
-                value: ''
-            })),
-            createdAt: new Date().toISOString()
-        };
-
-        setContracts([...contracts, newContract]);
-        return newContract;
+    const addContract = async (blueprintId, contractName) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await contractAPI.create({
+                name: contractName,
+                blueprintId: blueprintId
+            });
+            const newContract = response.data;
+            setContracts([...contracts, newContract]);
+            return newContract;
+        } catch (err) {
+            setError(err.message);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
     };
 
     // update contract field values
-    const updateContractFields = (contractId, updatedFields) => {
-        setContracts(contracts.map(contract => {
-            if (contract.id === contractId) {
-                return {
-                    ...contract,
-                    fields: updatedFields
-                };
-            }
-            return contract;
-        }));
+    const updateContractFields = async (contractId, updatedFields) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await contractAPI.updateFields(contractId, updatedFields);
+            const updatedContract = response.data;
+            setContracts(contracts.map(contract =>
+                contract._id === contractId ? updatedContract : contract
+            ));
+        } catch (err) {
+            setError(err.message);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
     };
 
     // change contract state
-    const changeContractState = (contractId, newState) => {
-        setContracts(contracts.map(contract => {
-            if (contract.id === contractId) {
-                // check if transition is valid
-                if (canTransition(contract.state, newState)) {
-                    return {
-                        ...contract,
-                        state: newState
-                    };
-                }
-            }
-            return contract;
-        }));
+    const changeContractState = async (contractId, newState) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await contractAPI.changeState(contractId, newState);
+            const updatedContract = response.data;
+            setContracts(contracts.map(contract =>
+                contract._id === contractId ? updatedContract : contract
+            ));
+        } catch (err) {
+            setError(err.message);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // refresh data
+    const refreshData = async () => {
+        await loadInitialData();
     };
 
     const value = {
         blueprints,
         contracts,
+        loading,
+        error,
         addBlueprint,
         addContract,
         updateContractFields,
-        changeContractState
+        changeContractState,
+        refreshData
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
+

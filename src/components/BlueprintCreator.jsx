@@ -9,8 +9,7 @@ const BlueprintCreator = ({ onClose }) => {
     const [currentField, setCurrentField] = useState({
         label: '',
         type: FIELD_TYPES.TEXT,
-        x: 50,
-        y: 50
+        position: { x: 50, y: 50 }
     });
 
     // add field to blueprint
@@ -29,8 +28,7 @@ const BlueprintCreator = ({ onClose }) => {
         setCurrentField({
             label: '',
             type: FIELD_TYPES.TEXT,
-            x: 50,
-            y: 50
+            position: { x: 50, y: 50 }
         });
     };
 
@@ -40,7 +38,7 @@ const BlueprintCreator = ({ onClose }) => {
     };
 
     // save blueprint
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!blueprintName) {
             alert('please enter blueprint name');
             return;
@@ -51,43 +49,48 @@ const BlueprintCreator = ({ onClose }) => {
             return;
         }
 
-        addBlueprint({
-            name: blueprintName,
-            fields: fields
-        });
-
-        onClose();
+        try {
+            // Remove temporary IDs before sending to backend
+            const fieldsToSave = fields.map(({ id, ...field }) => field);
+            await addBlueprint({
+                name: blueprintName,
+                fields: fieldsToSave
+            });
+            onClose();
+        } catch (error) {
+            alert('Failed to create blueprint: ' + error.message);
+        }
     };
 
     return (
         <div className="modal-overlay">
             <div className="modal">
-                <h2>create new blueprint</h2>
+                <h2>Create New Blueprint</h2>
 
                 <div className="form-group">
-                    <label>blueprint name</label>
+                    <label>Blueprint Name</label>
                     <input
                         type="text"
                         className="form-input"
                         value={blueprintName}
                         onChange={(e) => setBlueprintName(e.target.value)}
-                        placeholder="enter blueprint name"
+                        placeholder="Enter blueprint name"
                     />
                 </div>
 
                 <div className="form-group">
-                    <label>add field</label>
+                    <label>Add Field</label>
                     <input
                         type="text"
                         className="form-input"
                         value={currentField.label}
                         onChange={(e) => setCurrentField({ ...currentField, label: e.target.value })}
-                        placeholder="field label"
+                        placeholder="Field label"
                     />
                 </div>
 
                 <div className="form-group">
-                    <label>field type</label>
+                    <label>Field Type</label>
                     <select
                         className="form-select"
                         value={currentField.type}
@@ -101,27 +104,27 @@ const BlueprintCreator = ({ onClose }) => {
                 </div>
 
                 <div className="form-group">
-                    <label>position (x, y)</label>
+                    <label>Position (X, Y)</label>
                     <div style={{ display: 'flex', gap: '10px' }}>
                         <input
                             type="number"
                             className="form-input"
-                            value={currentField.x}
-                            onChange={(e) => setCurrentField({ ...currentField, x: parseInt(e.target.value) })}
-                            placeholder="x position"
+                            value={currentField.position.x}
+                            onChange={(e) => setCurrentField({ ...currentField, position: { ...currentField.position, x: parseInt(e.target.value) } })}
+                            placeholder="X position"
                         />
                         <input
                             type="number"
                             className="form-input"
-                            value={currentField.y}
-                            onChange={(e) => setCurrentField({ ...currentField, y: parseInt(e.target.value) })}
-                            placeholder="y position"
+                            value={currentField.position.y}
+                            onChange={(e) => setCurrentField({ ...currentField, position: { ...currentField.position, y: parseInt(e.target.value) } })}
+                            placeholder="Y position"
                         />
                     </div>
                 </div>
 
                 <button className="btn btn-secondary" onClick={handleAddField}>
-                    add field
+                    Add Field
                 </button>
 
                 {/* field preview */}
@@ -131,13 +134,13 @@ const BlueprintCreator = ({ onClose }) => {
                             <div key={field.id} className="field-item">
                                 <h4>{field.label}</h4>
                                 <p>type: {field.type}</p>
-                                <p>position: ({field.x}, {field.y})</p>
+                                <p>position: ({field.position.x}, {field.position.y})</p>
                                 <button
                                     className="btn btn-danger btn-small"
                                     onClick={() => handleRemoveField(field.id)}
                                     style={{ marginTop: '8px' }}
                                 >
-                                    remove
+                                    Remove
                                 </button>
                             </div>
                         ))}
@@ -146,10 +149,10 @@ const BlueprintCreator = ({ onClose }) => {
 
                 <div className="modal-actions">
                     <button className="btn btn-secondary" onClick={onClose}>
-                        cancel
+                        Cancel
                     </button>
                     <button className="btn btn-primary" onClick={handleSave}>
-                        save blueprint
+                        Save Blueprint
                     </button>
                 </div>
             </div>

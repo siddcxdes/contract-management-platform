@@ -5,7 +5,7 @@ import ContractEditor from './ContractEditor';
 import LifecycleTimeline from './LifecycleTimeline';
 
 const ContractDashboard = () => {
-    const { contracts, changeContractState } = useApp();
+    const { contracts, changeContractState, loading } = useApp();
     const [filter, setFilter] = useState('all');
     const [selectedContract, setSelectedContract] = useState(null);
     const [editingContract, setEditingContract] = useState(null);
@@ -34,16 +34,20 @@ const ContractDashboard = () => {
     };
 
     // handle state change
-    const handleStateChange = (contractId, newState) => {
-        changeContractState(contractId, newState);
+    const handleStateChange = async (contractId, newState) => {
+        try {
+            await changeContractState(contractId, newState);
+        } catch (error) {
+            alert('Failed to change contract state: ' + error.message);
+        }
     };
 
     const filteredContracts = getFilteredContracts();
 
     return (
         <div className="container">
-            <h2 style={{ marginBottom: '20px', textTransform: 'lowercase' }}>
-                contract dashboard
+            <h2 style={{ marginBottom: '20px' }}>
+                Contract Dashboard
             </h2>
 
             {/* filters */}
@@ -52,49 +56,49 @@ const ContractDashboard = () => {
                     className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
                     onClick={() => setFilter('all')}
                 >
-                    all contracts
+                    All Contracts
                 </button>
                 <button
                     className={`filter-btn ${filter === 'active' ? 'active' : ''}`}
                     onClick={() => setFilter('active')}
                 >
-                    active
+                    Active
                 </button>
                 <button
                     className={`filter-btn ${filter === 'pending' ? 'active' : ''}`}
                     onClick={() => setFilter('pending')}
                 >
-                    pending
+                    Pending
                 </button>
                 <button
                     className={`filter-btn ${filter === 'signed' ? 'active' : ''}`}
                     onClick={() => setFilter('signed')}
                 >
-                    signed
+                    Signed
                 </button>
             </div>
 
             {/* contracts table */}
             {filteredContracts.length === 0 ? (
                 <div className="empty-state">
-                    <h3>no contracts found</h3>
-                    <p>create a new contract to get started</p>
+                    <h3>No Contracts Found</h3>
+                    <p>Create a new contract to get started</p>
                 </div>
             ) : (
                 <div className="table-container">
                     <table className="table">
                         <thead>
                             <tr>
-                                <th>contract name</th>
-                                <th>blueprint</th>
-                                <th>status</th>
-                                <th>created date</th>
-                                <th>actions</th>
+                                <th>Contract Name</th>
+                                <th>Blueprint</th>
+                                <th>Status</th>
+                                <th>Created Date</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredContracts.map(contract => (
-                                <tr key={contract.id}>
+                                <tr key={contract._id}>
                                     <td>{contract.name}</td>
                                     <td>{contract.blueprintName}</td>
                                     <td>
@@ -109,13 +113,13 @@ const ContractDashboard = () => {
                                                 className="btn btn-secondary btn-small"
                                                 onClick={() => setSelectedContract(contract)}
                                             >
-                                                view
+                                                View
                                             </button>
                                             <button
                                                 className="btn btn-primary btn-small"
                                                 onClick={() => setEditingContract(contract)}
                                             >
-                                                edit
+                                                Edit
                                             </button>
                                         </div>
                                     </td>
@@ -133,29 +137,29 @@ const ContractDashboard = () => {
                         <h2>{selectedContract.name}</h2>
 
                         <div className="card">
-                            <p><strong>blueprint:</strong> {selectedContract.blueprintName}</p>
-                            <p><strong>created:</strong> {new Date(selectedContract.createdAt).toLocaleDateString()}</p>
-                            <p><strong>current status:</strong> <span className={`status-badge status-${selectedContract.state}`}>{selectedContract.state}</span></p>
+                            <p><strong>Blueprint:</strong> {selectedContract.blueprintName}</p>
+                            <p><strong>Created:</strong> {new Date(selectedContract.createdAt).toLocaleDateString()}</p>
+                            <p><strong>Current Status:</strong> <span className={`status-badge status-${selectedContract.state}`}>{selectedContract.state}</span></p>
                         </div>
 
                         <LifecycleTimeline currentState={selectedContract.state} />
 
                         {/* state transition buttons */}
                         <div style={{ marginTop: '20px' }}>
-                            <h3 style={{ marginBottom: '10px', textTransform: 'lowercase' }}>
-                                change status
+                            <h3 style={{ marginBottom: '10px' }}>
+                                Change Status
                             </h3>
                             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                                 {getNextStates(selectedContract.state).map(state => (
                                     <button
                                         key={state}
                                         className={`btn ${state === 'revoked' ? 'btn-danger' : 'btn-success'} btn-small`}
-                                        onClick={() => {
-                                            handleStateChange(selectedContract.id, state);
+                                        onClick={async () => {
+                                            await handleStateChange(selectedContract._id, state);
                                             setSelectedContract({ ...selectedContract, state });
                                         }}
                                     >
-                                        mark as {state}
+                                        Mark as {state.charAt(0).toUpperCase() + state.slice(1)}
                                     </button>
                                 ))}
                             </div>
@@ -163,7 +167,7 @@ const ContractDashboard = () => {
 
                         <div className="modal-actions">
                             <button className="btn btn-secondary" onClick={() => setSelectedContract(null)}>
-                                close
+                                Close
                             </button>
                         </div>
                     </div>

@@ -1,274 +1,349 @@
-# contract management platform
+# Contract Management Platform
 
-a simple yet powerful frontend application for managing contract blueprints and their lifecycle.
+A full-stack web application for managing contract blueprints and their lifecycle, built with React, Node.js, Express, and MongoDB.
 
-## features
+## Setup Instructions
 
-### 1. blueprint creation
-- create reusable contract templates with custom fields
-- supported field types: text, date, signature, checkbox
-- position fields with x,y coordinates
-- view all created blueprints
+### Prerequisites
+- Node.js (v18 or higher)
+- npm
+- MongoDB Atlas account (free tier)
 
-### 2. contract creation
-- generate contracts from existing blueprints
-- inherit all fields from the selected blueprint
-- fill in values for each field
-- edit contracts (unless locked or revoked)
+### Backend Setup
 
-### 3. contract lifecycle management
-the application enforces a strict state machine for contract progression:
-
-```
-created → approved → sent → signed → locked
-    ↓         ↓        ↓
-         revoked
-```
-
-**rules:**
-- contracts can only transition to allowed next states
-- locked contracts cannot be edited
-- revoked contracts cannot proceed further
-- state transitions are validated before execution
-
-### 4. contract dashboard
-- view all contracts in a table format
-- filter by status: all, active, pending, signed
-- see contract details including name, blueprint, status, and creation date
-- visual lifecycle timeline showing current state
-- change contract status with validation
-
-## tech stack
-
-- **react** - component-based ui library
-- **vite** - fast build tool and dev server
-- **context api** - state management
-- **local storage** - data persistence
-- **vanilla css** - styling with custom design system
-
-## architecture decisions
-
-### state management
-used react context api for global state management because:
-- simple and built into react
-- no external dependencies needed
-- sufficient for this application's complexity
-- easy to understand and maintain
-
-### data persistence
-implemented local storage for data persistence:
-- no backend required
-- data persists across browser sessions
-- simple to implement and test
-- suitable for frontend-only application
-
-### component structure
-organized components by functionality:
-- **context/** - global state management
-- **components/** - reusable ui components
-- **utils/** - helper functions and constants
-
-### lifecycle state machine
-implemented strict state transitions using a state machine pattern:
-- prevents invalid state changes
-- ensures data integrity
-- makes contract flow predictable
-- easy to extend with new states
-
-### code organization
-kept code simple and readable:
-- small, focused functions
-- clear variable names
-- comments explaining the "why"
-- consistent naming conventions
-
-## folder structure
-
-```
-src/
-├── components/
-│   ├── BlueprintCreator.jsx    # create new blueprints
-│   ├── BlueprintList.jsx       # display all blueprints
-│   ├── ContractCreator.jsx     # create contracts from blueprints
-│   ├── ContractDashboard.jsx   # main dashboard with filtering
-│   ├── ContractEditor.jsx      # edit contract field values
-│   └── LifecycleTimeline.jsx   # visual state progression
-├── context/
-│   └── AppContext.jsx          # global state management
-├── utils/
-│   ├── constants.js            # state machine and field types
-│   └── storage.js              # local storage helpers
-├── App.jsx                     # main app component
-├── main.jsx                    # entry point
-└── index.css                   # global styles
-```
-
-## setup instructions
-
-### prerequisites
-- node.js (version 14 or higher)
-- npm or yarn
-
-### installation
-
-1. clone the repository:
+1. Navigate to backend directory:
 ```bash
-git clone <repository-url>
-cd eurusys
+cd backend
+npm install
 ```
 
-2. install dependencies:
+2. Create `.env` file in `backend/` directory:
+```env
+PORT=5000
+NODE_ENV=development
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/contract-management?retryWrites=true&w=majority
+FRONTEND_URL=http://localhost:5173
+```
+
+3. Get MongoDB connection string:
+   - Sign up at https://cloud.mongodb.com/
+   - Create a free M0 cluster
+   - Create database user
+   - Get connection string from "Connect" → "Drivers"
+   - Replace `<password>` with your actual password
+
+4. Start backend server:
+```bash
+npm start
+```
+
+Expected output: `✓ Connected to MongoDB` and `✓ Server running on port 5000`
+
+### Frontend Setup
+
+1. Install dependencies:
 ```bash
 npm install
 ```
 
-3. start the development server:
+2. Start development server:
 ```bash
 npm run dev
 ```
 
-4. open your browser and navigate to:
+3. Open browser at `http://localhost:5173`
+
+## Architecture Overview
+
+### System Architecture
 ```
-http://localhost:5173
+┌─────────────────┐         ┌─────────────────┐         ┌─────────────────┐
+│  React Frontend │◄───────►│  Express API    │◄───────►│  MongoDB Atlas  │
+│  (Port 5173)    │   HTTP  │  (Port 5000)    │         │    Database     │
+└─────────────────┘         └─────────────────┘         └─────────────────┘
 ```
 
-### build for production
+### Technology Stack
 
-```bash
-npm run build
+**Frontend:**
+- React 19 - UI framework
+- Vite - Build tool and dev server
+- Axios - HTTP client for API calls
+- Context API - State management
+
+**Backend:**
+- Node.js - JavaScript runtime
+- Express.js - Web framework
+- MongoDB Atlas - Cloud NoSQL database
+- Mongoose - MongoDB ODM
+- express-validator - Request validation
+
+### Data Flow
+1. User interacts with React components
+2. Frontend makes API requests via Axios
+3. Express backend validates requests
+4. Mongoose performs database operations
+5. Response sent back to frontend
+6. React updates UI with new data
+
+### Project Structure
+```
+eurusys/
+├── backend/
+│   ├── models/              # Mongoose schemas
+│   │   ├── Blueprint.js     # Blueprint model
+│   │   └── Contract.js      # Contract model with state machine
+│   ├── routes/              # API endpoints
+│   │   ├── blueprints.js    # Blueprint CRUD
+│   │   └── contracts.js     # Contract CRUD + lifecycle
+│   ├── middleware/
+│   │   ├── validators.js    # Request validation
+│   │   └── errorHandler.js  # Error handling
+│   └── server.js            # Express server setup
+├── src/
+│   ├── components/          # React components
+│   ├── context/             # Global state management
+│   ├── services/            # API service layer
+│   └── utils/               # Helper functions
+└── README.md
 ```
 
-the production files will be in the `dist/` folder.
+## API Design Summary
 
-## usage guide
+### Base URL
+```
+http://localhost:5000/api
+```
 
-### creating a blueprint
+### Blueprint Endpoints
 
-1. click "create blueprint" button
-2. enter blueprint name
-3. add fields by:
-   - entering field label
-   - selecting field type
-   - setting position (x, y coordinates)
-   - clicking "add field"
-4. repeat for all fields
-5. click "save blueprint"
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/blueprints` | Get all blueprints |
+| GET | `/blueprints/:id` | Get single blueprint |
+| POST | `/blueprints` | Create new blueprint |
+| PUT | `/blueprints/:id` | Update blueprint |
+| DELETE | `/blueprints/:id` | Delete blueprint |
 
-### creating a contract
+**Blueprint Schema:**
+```javascript
+{
+  name: String,
+  fields: [{
+    type: String,        // 'text' | 'date' | 'signature' | 'checkbox'
+    label: String,
+    position: { x: Number, y: Number }
+  }],
+  createdAt: Date,
+  updatedAt: Date
+}
+```
 
-1. click "create contract" button
-2. enter contract name
-3. select a blueprint from dropdown
-4. preview blueprint fields
-5. click "create contract"
+### Contract Endpoints
 
-### editing a contract
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/contracts` | Get all contracts |
+| GET | `/contracts?filter=active\|pending\|signed` | Get filtered contracts |
+| GET | `/contracts/:id` | Get single contract |
+| POST | `/contracts` | Create contract from blueprint |
+| PUT | `/contracts/:id` | Update contract fields |
+| PATCH | `/contracts/:id/state` | Change contract state |
+| DELETE | `/contracts/:id` | Delete contract |
 
-1. go to dashboard
-2. click "edit" on any contract
-3. fill in field values
-4. click "save changes"
+**Contract Schema:**
+```javascript
+{
+  name: String,
+  blueprintId: ObjectId,
+  blueprintName: String,
+  state: String,       // 'created' | 'approved' | 'sent' | 'signed' | 'locked' | 'revoked'
+  fields: [{
+    type: String,
+    label: String,
+    position: { x: Number, y: Number },
+    value: Mixed
+  }],
+  createdAt: Date,
+  updatedAt: Date
+}
+```
 
-note: locked and revoked contracts cannot be edited.
+### State Machine
 
-### managing contract lifecycle
+Contract lifecycle follows strict state transitions:
+```
+Created → Approved → Sent → Signed → Locked
+    ↓         ↓        ↓
+         Revoked
+```
 
-1. click "view" on any contract
-2. see current state in timeline
-3. use action buttons to transition to next valid state
-4. states automatically validate before transition
+**Validation Rules:**
+- Transitions enforced on backend via `canTransitionTo()` method
+- Invalid transitions return 400 error
+- Locked contracts are immutable
+- Revoked contracts cannot progress
 
-### filtering contracts
+### Request/Response Examples
 
-use filter buttons to view:
-- **all contracts** - every contract
-- **active** - created and approved contracts
-- **pending** - sent contracts awaiting signature
-- **signed** - signed and locked contracts
+**Create Blueprint:**
+```json
+POST /api/blueprints
+{
+  "name": "Employment Contract",
+  "fields": [
+    {
+      "type": "text",
+      "label": "Employee Name",
+      "position": { "x": 100, "y": 50 }
+    },
+    {
+      "type": "date",
+      "label": "Start Date",
+      "position": { "x": 100, "y": 100 }
+    }
+  ]
+}
+```
 
-## assumptions and limitations
+**Create Contract:**
+```json
+POST /api/contracts
+{
+  "name": "John Doe Employment Contract",
+  "blueprintId": "507f1f77bcf86cd799439011"
+}
+```
 
-### assumptions
-- single user application (no authentication)
-- data stored locally in browser
-- contracts follow linear progression (except revoked)
-- field positioning uses simple x,y coordinates
+**Change State:**
+```json
+PATCH /api/contracts/:id/state
+{
+  "newState": "approved"
+}
+```
 
-### limitations
-- no drag-and-drop field placement
-- no backend api integration
-- data not synced across devices
-- no user authentication or authorization
-- no contract templates export/import
-- limited field validation
-- no file attachments
-- no email notifications
-- basic positioning system (not wysiwyg)
+### Error Handling
 
-### future enhancements
-- drag-and-drop field builder
-- backend integration with api
-- user authentication
-- contract templates library
-- advanced field validation
-- file upload support
-- email notifications for state changes
-- pdf export functionality
-- collaborative editing
-- audit trail for changes
+All errors return consistent format:
+```json
+{
+  "success": false,
+  "message": "Error description",
+  "errors": []  // Optional validation errors
+}
+```
 
-## design decisions
+**HTTP Status Codes:**
+- 200 - Success
+- 201 - Created
+- 400 - Bad Request (validation error)
+- 403 - Forbidden (e.g., editing locked contract)
+- 404 - Not Found
+- 500 - Internal Server Error
 
-### ui/ux
-- clean, minimal interface
-- purple gradient theme for modern look
-- josefin sans font for readability
-- card-based layout for organization
-- color-coded status badges
-- visual timeline for lifecycle
-- responsive design principles
+## Assumptions and Trade-offs
 
-### code style
-- lowercase text throughout
-- simple english in comments
-- no complex jargon
-- student-friendly code structure
-- clear function names
-- modular components
+### Assumptions
 
-### validation
-- client-side validation for forms
-- state machine for lifecycle transitions
-- readonly mode for locked/revoked contracts
-- user-friendly error messages
+1. **Single User System**
+   - No authentication or authorization required
+   - All users have full access to all contracts
+   - Suitable for assignment scope and demonstration purposes
 
-## testing
+2. **Linear Workflow**
+   - Contracts follow a predefined linear progression
+   - No parallel approval paths or complex branching
+   - Revoked state is the only exception to linear flow
 
-### manual testing checklist
+3. **Simple Field Positioning**
+   - Fields positioned using x,y coordinates
+   - No visual canvas or drag-and-drop interface
+   - Sufficient for demonstrating data structure
 
-- [ ] create a blueprint with multiple field types
-- [ ] create a contract from blueprint
-- [ ] edit contract and save changes
-- [ ] transition contract through all states
-- [ ] try invalid state transitions
-- [ ] filter contracts by status
-- [ ] verify locked contracts cannot be edited
-- [ ] verify revoked contracts cannot progress
-- [ ] test with empty data
-- [ ] test browser refresh (data persistence)
+4. **Cloud Database**
+   - MongoDB Atlas used instead of local MongoDB
+   - Requires internet connection
+   - Free tier sufficient for development and testing
 
-## browser compatibility
+### Trade-offs
 
-tested on:
-- chrome (latest)
-- firefox (latest)
-- safari (latest)
-- edge (latest)
+#### MongoDB vs PostgreSQL
+**Chose MongoDB:**
+- ✅ Flexible schema for dynamic field structures
+- ✅ Faster development with Mongoose ODM
+- ✅ Easy to work with in JavaScript ecosystem
+- ✅ Good fit for document-based data (blueprints/contracts)
 
-## license
+**Trade-off:**
+- ❌ Less suitable for complex relationships
+- ❌ No built-in ACID transactions across collections
+- ❌ PostgreSQL would be better for strict data integrity requirements
 
-this project is created for educational purposes.
+#### No Authentication
+**Chose to skip authentication:**
+- ✅ Simplified implementation for assignment scope
+- ✅ Focus on core functionality (blueprints, contracts, lifecycle)
+- ✅ Easier to test and demonstrate
 
-## contact
+**Trade-off:**
+- ❌ Not production-ready
+- ❌ Would need JWT/OAuth for real-world use
+- ❌ No user-specific data or permissions
 
-for questions or feedback, please open an issue on github.
+#### Simple Positioning System
+**Chose x,y coordinates:**
+- ✅ Simple to implement and understand
+- ✅ Demonstrates data structure clearly
+- ✅ Sufficient for backend validation
+
+**Trade-off:**
+- ❌ Not user-friendly for non-technical users
+- ❌ Drag-and-drop would be more intuitive
+- ❌ No visual feedback during field placement
+
+#### Express vs NestJS
+**Chose Express:**
+- ✅ Simpler and more straightforward
+- ✅ Large community and ecosystem
+- ✅ Faster to set up and develop
+
+**Trade-off:**
+- ❌ Less structure than NestJS
+- ❌ Manual organization of code
+- ❌ NestJS would provide better TypeScript support and dependency injection
+
+#### Context API vs Redux
+**Chose Context API:**
+- ✅ Built into React, no extra dependencies
+- ✅ Sufficient for this application's complexity
+- ✅ Easier to understand and maintain
+
+**Trade-off:**
+- ❌ Less powerful than Redux for complex state
+- ❌ No time-travel debugging
+- ❌ Redux would be better for larger applications
+
+### Known Limitations
+
+1. **No File Attachments** - Real contracts would need PDF/document support
+2. **No Email Notifications** - State changes don't trigger notifications
+3. **No Audit Trail** - No history of who changed what and when
+4. **No Role-Based Access** - Everyone has same permissions
+5. **Basic Error Messages** - Could be more user-friendly
+6. **No Offline Support** - Requires active internet connection
+7. **No Data Export** - Cannot export contracts to PDF or other formats
+
+### Future Enhancements
+
+If extended beyond assignment scope:
+- User authentication with JWT
+- Role-based access control (creator, approver, signer)
+- PDF generation and export
+- Email notifications for state changes
+- Audit trail and version history
+- Drag-and-drop field builder
+- File attachment support
+- Advanced search and filtering
+- Unit and integration tests
+- Docker containerization for deployment

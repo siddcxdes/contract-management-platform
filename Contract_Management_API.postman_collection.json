@@ -1,0 +1,505 @@
+{
+    "info": {
+        "name": "Contract Management Platform API",
+        "description": "Complete API collection for Contract Management Platform",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Blueprints",
+            "item": [
+                {
+                    "name": "Get All Blueprints",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/blueprints",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "blueprints"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Blueprint by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/blueprints/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "blueprints",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{blueprintId}}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Blueprint",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Employment Contract Template\",\n  \"fields\": [\n    {\n      \"type\": \"text\",\n      \"label\": \"Employee Name\",\n      \"position\": {\n        \"x\": 100,\n        \"y\": 50\n      }\n    },\n    {\n      \"type\": \"date\",\n      \"label\": \"Start Date\",\n      \"position\": {\n        \"x\": 100,\n        \"y\": 100\n      }\n    },\n    {\n      \"type\": \"text\",\n      \"label\": \"Position\",\n      \"position\": {\n        \"x\": 100,\n        \"y\": 150\n      }\n    },\n    {\n      \"type\": \"signature\",\n      \"label\": \"Employee Signature\",\n      \"position\": {\n        \"x\": 100,\n        \"y\": 250\n      }\n    },\n    {\n      \"type\": \"checkbox\",\n      \"label\": \"I agree to terms\",\n      \"position\": {\n        \"x\": 100,\n        \"y\": 300\n      }\n    }\n  ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/blueprints",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "blueprints"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Blueprint",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Updated Employment Contract\",\n  \"fields\": [\n    {\n      \"type\": \"text\",\n      \"label\": \"Full Name\",\n      \"position\": {\n        \"x\": 100,\n        \"y\": 50\n      }\n    }\n  ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/blueprints/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "blueprints",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{blueprintId}}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Blueprint",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/blueprints/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "blueprints",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{blueprintId}}"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Contracts",
+            "item": [
+                {
+                    "name": "Get All Contracts",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/contracts",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "contracts"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Active Contracts",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/contracts?filter=active",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "contracts"
+                            ],
+                            "query": [
+                                {
+                                    "key": "filter",
+                                    "value": "active"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Pending Contracts",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/contracts?filter=pending",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "contracts"
+                            ],
+                            "query": [
+                                {
+                                    "key": "filter",
+                                    "value": "pending"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Signed Contracts",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/contracts?filter=signed",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "contracts"
+                            ],
+                            "query": [
+                                {
+                                    "key": "filter",
+                                    "value": "signed"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Contract by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/contracts/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "contracts",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{contractId}}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Contract",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"John Doe Employment Contract\",\n  \"blueprintId\": \"{{blueprintId}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/contracts",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "contracts"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Contract Fields",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"fields\": [\n    {\n      \"type\": \"text\",\n      \"label\": \"Employee Name\",\n      \"position\": { \"x\": 100, \"y\": 50 },\n      \"value\": \"John Doe\"\n    },\n    {\n      \"type\": \"date\",\n      \"label\": \"Start Date\",\n      \"position\": { \"x\": 100, \"y\": 100 },\n      \"value\": \"2024-01-15\"\n    },\n    {\n      \"type\": \"text\",\n      \"label\": \"Position\",\n      \"position\": { \"x\": 100, \"y\": 150 },\n      \"value\": \"Software Engineer\"\n    },\n    {\n      \"type\": \"signature\",\n      \"label\": \"Employee Signature\",\n      \"position\": { \"x\": 100, \"y\": 250 },\n      \"value\": \"John Doe\"\n    },\n    {\n      \"type\": \"checkbox\",\n      \"label\": \"I agree to terms\",\n      \"position\": { \"x\": 100, \"y\": 300 },\n      \"value\": \"true\"\n    }\n  ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/contracts/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "contracts",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{contractId}}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Change State to Approved",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"newState\": \"approved\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/contracts/:id/state",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "contracts",
+                                ":id",
+                                "state"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{contractId}}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Change State to Sent",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"newState\": \"sent\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/contracts/:id/state",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "contracts",
+                                ":id",
+                                "state"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{contractId}}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Change State to Signed",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"newState\": \"signed\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/contracts/:id/state",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "contracts",
+                                ":id",
+                                "state"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{contractId}}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Change State to Locked",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"newState\": \"locked\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/contracts/:id/state",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "contracts",
+                                ":id",
+                                "state"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{contractId}}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Change State to Revoked",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"newState\": \"revoked\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/contracts/:id/state",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "contracts",
+                                ":id",
+                                "state"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{contractId}}"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Contract",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/contracts/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "contracts",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": "{{contractId}}"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:5000/api",
+            "type": "string"
+        },
+        {
+            "key": "blueprintId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "contractId",
+            "value": "",
+            "type": "string"
+        }
+    ]
+}

@@ -7,7 +7,7 @@ const ContractCreator = ({ onClose }) => {
     const [contractName, setContractName] = useState('');
 
     // create contract from selected blueprint
-    const handleCreate = () => {
+    const handleCreate = async () => {
         if (!contractName) {
             alert('please enter contract name');
             return;
@@ -18,36 +18,40 @@ const ContractCreator = ({ onClose }) => {
             return;
         }
 
-        addContract(selectedBlueprint, contractName);
-        onClose();
+        try {
+            await addContract(selectedBlueprint, contractName);
+            onClose();
+        } catch (error) {
+            alert('Failed to create contract: ' + error.message);
+        }
     };
 
     return (
         <div className="modal-overlay">
             <div className="modal">
-                <h2>create new contract</h2>
+                <h2>Create New Contract</h2>
 
                 <div className="form-group">
-                    <label>contract name</label>
+                    <label>Contract Name</label>
                     <input
                         type="text"
                         className="form-input"
                         value={contractName}
                         onChange={(e) => setContractName(e.target.value)}
-                        placeholder="enter contract name"
+                        placeholder="Enter contract name"
                     />
                 </div>
 
                 <div className="form-group">
-                    <label>select blueprint</label>
+                    <label>Select Blueprint</label>
                     <select
                         className="form-select"
                         value={selectedBlueprint}
                         onChange={(e) => setSelectedBlueprint(e.target.value)}
                     >
-                        <option value="">choose a blueprint</option>
+                        <option value="">Choose a Blueprint</option>
                         {blueprints.map(blueprint => (
-                            <option key={blueprint.id} value={blueprint.id}>
+                            <option key={blueprint._id} value={blueprint._id}>
                                 {blueprint.name}
                             </option>
                         ))}
@@ -56,11 +60,11 @@ const ContractCreator = ({ onClose }) => {
 
                 {selectedBlueprint && (
                     <div className="card">
-                        <h3 style={{ marginBottom: '10px', textTransform: 'lowercase' }}>
-                            blueprint preview
+                        <h3 style={{ marginBottom: '10px' }}>
+                            Blueprint Preview
                         </h3>
-                        {blueprints.find(b => b.id === selectedBlueprint)?.fields.map(field => (
-                            <p key={field.id} style={{ fontSize: '14px', marginBottom: '5px' }}>
+                        {blueprints.find(b => b._id === selectedBlueprint)?.fields.map((field, index) => (
+                            <p key={index} style={{ fontSize: '14px', marginBottom: '5px' }}>
                                 • {field.label} ({field.type})
                             </p>
                         ))}
@@ -69,10 +73,10 @@ const ContractCreator = ({ onClose }) => {
 
                 <div className="modal-actions">
                     <button className="btn btn-secondary" onClick={onClose}>
-                        cancel
+                        Cancel
                     </button>
                     <button className="btn btn-primary" onClick={handleCreate}>
-                        create contract
+                        Create Contract
                     </button>
                 </div>
             </div>

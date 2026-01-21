@@ -6,10 +6,10 @@ const ContractEditor = ({ contract, onClose }) => {
     const { updateContractFields } = useApp();
     const [fields, setFields] = useState(contract.fields);
 
-    // update field value
-    const handleFieldChange = (fieldId, value) => {
-        setFields(fields.map(field => {
-            if (field.id === fieldId) {
+    // update field value - fields from MongoDB don't have individual IDs, use index
+    const handleFieldChange = (index, value) => {
+        setFields(fields.map((field, i) => {
+            if (i === index) {
                 return { ...field, value };
             }
             return field;
@@ -17,9 +17,13 @@ const ContractEditor = ({ contract, onClose }) => {
     };
 
     // save changes
-    const handleSave = () => {
-        updateContractFields(contract.id, fields);
-        onClose();
+    const handleSave = async () => {
+        try {
+            await updateContractFields(contract._id, fields);
+            onClose();
+        } catch (error) {
+            alert('Failed to save changes: ' + error.message);
+        }
     };
 
     // check if contract is locked or revoked
@@ -28,7 +32,7 @@ const ContractEditor = ({ contract, onClose }) => {
     return (
         <div className="modal-overlay">
             <div className="modal">
-                <h2>edit contract: {contract.name}</h2>
+                <h2>Edit Contract: {contract.name}</h2>
 
                 {isReadOnly && (
                     <div style={{
@@ -38,18 +42,18 @@ const ContractEditor = ({ contract, onClose }) => {
                         marginBottom: '20px',
                         color: '#742a2a'
                     }}>
-                        this contract is {contract.state} and cannot be edited
+                        This contract is {contract.state} and cannot be edited
                     </div>
                 )}
 
                 <div className="blueprint-canvas">
-                    {fields.map(field => (
+                    {fields.map((field, index) => (
                         <div
-                            key={field.id}
+                            key={index}
                             className="placed-field"
                             style={{
-                                left: `${field.x}px`,
-                                top: `${field.y}px`
+                                left: `${field.position.x}px`,
+                                top: `${field.position.y}px`
                             }}
                         >
                             <label style={{ display: 'block', marginBottom: '5px', fontWeight: '600' }}>
@@ -61,9 +65,9 @@ const ContractEditor = ({ contract, onClose }) => {
                                     type="text"
                                     className="form-input"
                                     value={field.value || ''}
-                                    onChange={(e) => handleFieldChange(field.id, e.target.value)}
+                                    onChange={(e) => handleFieldChange(index, e.target.value)}
                                     disabled={isReadOnly}
-                                    placeholder="enter text"
+                                    placeholder="Enter text"
                                 />
                             )}
 
@@ -72,7 +76,7 @@ const ContractEditor = ({ contract, onClose }) => {
                                     type="date"
                                     className="form-input"
                                     value={field.value || ''}
-                                    onChange={(e) => handleFieldChange(field.id, e.target.value)}
+                                    onChange={(e) => handleFieldChange(index, e.target.value)}
                                     disabled={isReadOnly}
                                 />
                             )}
@@ -82,9 +86,9 @@ const ContractEditor = ({ contract, onClose }) => {
                                     type="text"
                                     className="form-input"
                                     value={field.value || ''}
-                                    onChange={(e) => handleFieldChange(field.id, e.target.value)}
+                                    onChange={(e) => handleFieldChange(index, e.target.value)}
                                     disabled={isReadOnly}
-                                    placeholder="signature"
+                                    placeholder="Signature"
                                     style={{ fontStyle: 'italic' }}
                                 />
                             )}
@@ -93,7 +97,7 @@ const ContractEditor = ({ contract, onClose }) => {
                                 <input
                                     type="checkbox"
                                     checked={field.value === 'true'}
-                                    onChange={(e) => handleFieldChange(field.id, e.target.checked.toString())}
+                                    onChange={(e) => handleFieldChange(index, e.target.checked.toString())}
                                     disabled={isReadOnly}
                                     style={{ width: '20px', height: '20px' }}
                                 />
@@ -104,11 +108,11 @@ const ContractEditor = ({ contract, onClose }) => {
 
                 <div className="modal-actions">
                     <button className="btn btn-secondary" onClick={onClose}>
-                        close
+                        Close
                     </button>
                     {!isReadOnly && (
                         <button className="btn btn-primary" onClick={handleSave}>
-                            save changes
+                            Save Changes
                         </button>
                     )}
                 </div>

@@ -37,7 +37,7 @@ const LifecycleTimeline = ({ currentState }) => {
                     color: '#742a2a',
                     fontWeight: '600'
                 }}>
-                    this contract has been revoked
+                    This Contract Has Been Revoked
                 </div>
             )}
 
