@@ -2,6 +2,9 @@
 
 A full-stack web application for managing contract blueprints and their lifecycle, built with React, Node.js, Express, and MongoDB.
 
+##Live Link
+contract-management-platform-lime.vercel.app
+
 ## Setup Instructions
 
 ### Prerequisites
